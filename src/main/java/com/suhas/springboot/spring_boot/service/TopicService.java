@@ -1,45 +1,39 @@
 package com.suhas.springboot.spring_boot.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.suhas.springboot.spring_boot.dao.TopicRepository;
 import com.suhas.springboot.spring_boot.models.Topic;
 
 @Service
 public class TopicService {
-
-	private List<Topic> topics = new ArrayList<>(Arrays.asList(new Topic(0, "Java", "Java Courses"),
-			new Topic(1, "Web", "Web Courses"), new Topic(2, "Javascript", "Javascript Courses")));
+	
+	@Autowired
+	private TopicRepository topicRepository;
 
 	public List<Topic> getAllTopics() {
+		List<Topic> topics = new ArrayList<>();
+		topicRepository.findAll().forEach(topics::add);
 		return topics;
 	}
 
 	public Topic getTopicById(int id) {
-		return topics.stream().filter((t) -> t.getId() == id).findFirst().get();
+		return topicRepository.findById(id).get();
 	}
 
 	public void addTopic(Topic topic) {
-		topics.forEach(t -> {
-			if (t.getId() == topic.getId()) {
-				throw new IllegalArgumentException("Topic already exists");
-			}
-		});
-		topics.add(topic);	
+		topicRepository.save(topic);
 	}
 	
-	public void updateTopic(int id, Topic topic) {
-		if(topics.get(id) != null) {
-			topics.set(id, topic);
-		}
+	public void updateTopic(Topic topic) {
+		topicRepository.save(topic);
 	}
 	
 	public void deleteTopic(int id) {
-		if(topics.get(id) != null) {
-			topics.remove(id);
-		}
+		topicRepository.deleteById(id);
 	}
 }
